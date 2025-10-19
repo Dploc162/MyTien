@@ -7,8 +7,8 @@
 <style>
   :root {
     --heart-size: clamp(220px, 40vmin, 560px);
-    --bg1: #ffe6ea;
-    --bg2: #ffb6c1;
+    --bg1: #000000;
+    --bg2: #0a001a;
     --accent: #ff2b85;
   }
 
@@ -23,6 +23,15 @@
     flex-direction: column;
     background: radial-gradient(circle at 30% 20%, var(--bg1), var(--bg2));
     overflow: hidden;
+    position: relative;
+  }
+
+  canvas#stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
   }
 
   .title {
@@ -32,6 +41,18 @@
     text-shadow: 0 0 14px rgba(255,102,153,0.25);
     font-size: clamp(18px, 3.4vmin, 28px);
     margin-bottom: 1.5rem;
+    z-index: 2;
+  }
+
+    .title2 {
+    font-size: 19px !important;
+    color: var(--accent);
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 0 0 14px rgba(255,102,153,0.25);
+    font-size: clamp(18px, 3.4vmin, 28px);
+    margin-top: -0.5rem;
+    z-index: 2;
   }
 
   .heart-stage {
@@ -42,6 +63,7 @@
     justify-content: center;
     align-items: center;
     animation: heartbeat 1.8s ease-in-out infinite;
+    z-index: 2;
   }
 
   @keyframes heartbeat {
@@ -62,7 +84,10 @@
     pointer-events: none;
     user-select: none;
     text-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    z-index: 2;
   }
+
+  audio { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
     .falling-heart { animation: none !important; }
@@ -70,6 +95,8 @@
 </style>
 </head>
 <body>
+  <canvas id="stars"></canvas>
+
   <div class="title">💖 Chúc eiu Mỹ Tiên 20/10 vui vẻ, hạnh phúc 😘</div>
 
   <div class="heart-stage" id="heartStage">
@@ -87,7 +114,12 @@
     </svg>
   </div>
 
+    <div class="title2"> 👆♬ </div>
+
+  <audio id="bgm" src="beautiful_in_white.mp3" preload="auto"></audio>
+
 <script>
+
 (function(){
   const ids = ['img1','img2','img3'];
   const slides = ids.map(id => document.getElementById(id));
@@ -117,9 +149,9 @@
 
   function spawnHeart(){
     const rect = stage.getBoundingClientRect();
-    const xMin = rect.left - rect.width*0.25;
-    const xMax = rect.right + rect.width*0.25;
-    const spawnTop = Math.max(30, rect.top - 150);
+    const xMin = rect.left - rect.width*0.5;
+    const xMax = rect.right + rect.width*0.5;
+    const spawnTop = Math.max(0, rect.top - 150);
 
     const el = document.createElement('div');
     el.className = 'falling-heart';
@@ -134,7 +166,7 @@
     const rotate = rand(-720,720);
     const dist = window.innerHeight + 80;
     const start = performance.now();
-    const amplitude = rand(30, 80);
+    const amplitude = rand(50, 120);
 
     function animate(time){
       const t = (time - start)/duration;
@@ -148,7 +180,7 @@
   }
 
   function startSpawner(){
-    const baseInterval = window.innerWidth < 420 ? 420 : (window.innerWidth < 900 ? 280 : 180);
+    const baseInterval = window.innerWidth < 420 ? 420 : (window.innerWidth < 900 ? 280 : 150);
     return setInterval(spawnHeart, baseInterval);
   }
 
@@ -159,6 +191,60 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(()=>{ spawner = startSpawner(); }, 250);
   });
+})();
+
+(function(){
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = [];
+    for(let i=0; i<600; i++){ // tăng gấp đôi số sao
+      stars.push({
+        x: Math.random()*canvas.width - canvas.width/2,
+        y: Math.random()*canvas.height - canvas.height/2,
+        z: Math.random()*canvas.width,
+        r: Math.random()*1.5 + 0.2
+      });
+    }
+  }
+
+  function draw(){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    for(let i=0; i<stars.length; i++){
+      const s = stars[i];
+      s.z -= 1.2;
+      if(s.z <= 0) s.z = canvas.width;
+      const k = 128.0 / s.z;
+      const px = s.x * k + canvas.width/2;
+      const py = s.y * k + canvas.height/2;
+      if(px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height){
+        const size = s.r * k;
+        const shade = 200 + Math.random()*55;
+        ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+        ctx.beginPath();
+        ctx.arc(px, py, size, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
+
+(function(){
+  const audio = document.getElementById('bgm');
+  document.body.addEventListener('click', ()=>{
+    audio.play().catch(()=>{});
+  }, { once: true });
 })();
 </script>
 </body>
