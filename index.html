@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>💖Mỹ Tiên cute đẹp gái kkk💖</title>
+<style>
+  :root {
+    --heart-size: clamp(220px, 40vmin, 560px);
+    --bg1: #ffe6ea;
+    --bg2: #ffb6c1;
+    --accent: #ff2b85;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    height: 100vh;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: radial-gradient(circle at 30% 20%, var(--bg1), var(--bg2));
+    overflow: hidden;
+  }
+
+  .title {
+    color: var(--accent);
+    text-align: center;
+    font-weight: 700;
+    text-shadow: 0 0 14px rgba(255,102,153,0.25);
+    font-size: clamp(18px, 3.4vmin, 28px);
+    margin-bottom: 1.5rem;
+  }
+
+  .heart-stage {
+    position: relative;
+    width: var(--heart-size);
+    height: var(--heart-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: heartbeat 1.8s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  svg.heart-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .falling-heart {
+    position: fixed;
+    top: -40px;
+    font-size: 14px;
+    pointer-events: none;
+    user-select: none;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .falling-heart { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="title">💖 Chúc eiu Mỹ Tiên 20/10 vui vẻ, hạnh phúc 😘</div>
+
+  <div class="heart-stage" id="heartStage">
+    <svg class="heart-svg" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="heartClip">
+          <path d="M210 380C210 380 0 240 0 110C0 45 45 0 110 0C150 0 190 35 210 65C230 35 270 0 310 0C375 0 420 45 420 110C420 240 210 380 210 380Z"/>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#heartClip)">
+        <image id="img1" href="MT1.jpg" x="0" y="0" width="420" height="420" preserveAspectRatio="xMidYMid slice" opacity="1" />
+        <image id="img2" href="MT2.jpg" x="0" y="0" width="420" height="420" preserveAspectRatio="xMidYMid slice" opacity="0" />
+        <image id="img3" href="MT3.jpg" x="0" y="0" width="420" height="420" preserveAspectRatio="xMidYMid slice" opacity="0" />
+      </g>
+    </svg>
+  </div>
+
+<script>
+(function(){
+  const ids = ['img1','img2','img3'];
+  const slides = ids.map(id => document.getElementById(id));
+  let cur = 0;
+  const displayDuration = 1500;
+  const fadeDuration = 2000;
+
+  function showNext(){
+    const prev = cur;
+    cur = (cur + 1) % slides.length;
+    const start = performance.now();
+    function step(t){
+      const p = Math.min(1,(t - start)/fadeDuration);
+      slides[prev].setAttribute('opacity', String(1 - p));
+      slides[cur].setAttribute('opacity', String(p));
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  setInterval(showNext, displayDuration + fadeDuration);
+})();
+
+(function(){
+  const stage = document.getElementById('heartStage');
+  function rand(min,max){ return min + Math.random()*(max-min); }
+
+  function spawnHeart(){
+    const rect = stage.getBoundingClientRect();
+    const xMin = rect.left - rect.width*0.25;
+    const xMax = rect.right + rect.width*0.25;
+    const spawnTop = Math.max(30, rect.top - 150);
+
+    const el = document.createElement('div');
+    el.className = 'falling-heart';
+    el.textContent = '❤';
+    el.style.left = rand(xMin, xMax) + 'px';
+    el.style.top = (spawnTop - rand(10,60)) + 'px';
+    el.style.color = ['#ff3366','#ff6699','#ff99cc','#ff66b2','#ffd1e0'][Math.floor(Math.random()*5)];
+    el.style.fontSize = rand(10, rect.width/12) + 'px';
+    document.body.appendChild(el);
+
+    const duration = rand(3200,7200);
+    const rotate = rand(-720,720);
+    const dist = window.innerHeight + 80;
+    const start = performance.now();
+    const amplitude = rand(30, 80);
+
+    function animate(time){
+      const t = (time - start)/duration;
+      if(t >= 1){ el.remove(); return; }
+      const ease = t<0.5 ? (2*t*t) : (-1 + (4-2*t)*t);
+      el.style.transform = `translate3d(${Math.sin(t*Math.PI*2)*amplitude}px, ${ease*dist}px, 0) rotate(${rotate*t}deg)`;
+      el.style.opacity = String(1 - t*0.95);
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+  }
+
+  function startSpawner(){
+    const baseInterval = window.innerWidth < 420 ? 420 : (window.innerWidth < 900 ? 280 : 180);
+    return setInterval(spawnHeart, baseInterval);
+  }
+
+  let spawner = startSpawner();
+  let resizeTimer;
+  window.addEventListener('resize', ()=>{
+    clearInterval(spawner);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=>{ spawner = startSpawner(); }, 250);
+  });
+})();
+</script>
+</body>
+</html>
